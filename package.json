@@ -1,0 +1,42 @@
+{
+    "name": "casperjs",
+    "version": "0.0.1",
+    "keywords": ["phantomjs","casperjs", "headless", "testing"],
+    "description": "add casperjs to node enviorment",
+    "repository":
+    {
+        "type": "git",
+        "url": "git://github.com//casperjs.git"
+    },
+    "licenses":
+            [
+                {
+                    "type": "MIT"
+                }
+            ],
+    "author": {
+    "name": "Eran Koren",
+    "email": "eran@beeziko.com",
+    "url": "http://www.beeziko.com"
+    },
+    "maintainers": [ {
+    "name": "Eran Koren",
+    "email": "eran@beeziko.com",
+    "web": "http://www.beeziko.com"
+    } ],
+    "main": "./lib/casper.js",
+    "bin": {
+        "casperjs" : "./bin/casperjs"
+    },
+    "dependencies":
+    {
+        "async": "*",
+        "request":"*",
+        "unzip": "*"
+    },
+    "scripts":
+    {
+        "install": "node install.js"
+    }
+
+}
