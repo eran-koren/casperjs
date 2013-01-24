@@ -67,9 +67,21 @@ function dlAndExtract(extractTo,remoteURL,then)
 
         if (process.platform === 'linux')
         {
-                    console.log("zip name " + zipName + " extract "+ extractTo);
+            console.log("zip name " + zipName + " extract "+ extractTo);
 
-            var tar    = spawn('tar', ['-xjf',zipName, '-C',extractTo + "tmp"]);
+            require('child_process').exec('tar xjf ' + zipName + ' -C ' + extractTo + 'tmp',
+              function (error, stdout, stderr) {
+                console.log('stdout: ' + stdout);
+                console.log('stderr: ' + stderr);
+                if (error !== null) {
+                  console.log('exec error: ' + error);
+                }
+                else
+                {
+                    cleanUp();
+                }
+            });
+        /*    var tar    = spawn('tar', ['-xjf',zipName, '-C',extractTo + "tmp"]);
 
             //print output for easier debugging
             tar.stdout.on('data', function (data) {
@@ -79,7 +91,7 @@ function dlAndExtract(extractTo,remoteURL,then)
                 console.log('stderr: ' + data);
             });
 
-            tar.on('exit', cleanUp);
+            tar.on('exit', cleanUp);*/
         }
         else
         {
