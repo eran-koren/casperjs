@@ -4,6 +4,7 @@ var path = require("path");
 var unzip = require('unzip');
 var spawn = require('child_process').spawn;
 
+
 function getPhantomURL ()
 {
     var platform_suffix;
@@ -84,10 +85,12 @@ function dlAndExtract(extractTo,remoteURL,then)
         /*    var tar    = spawn('tar', ['-xjf',zipName, '-C',extractTo + "tmp"]);
 
             //print output for easier debugging
-            tar.stdout.on('data', function (data) {
+            tar.stdout.on('data', function (data)
+            {
                 console.log('stdout: ' + data);
             });
-            tar.stderr.on('data', function (data) {
+            tar.stderr.on('data', function (data)
+            {
                 console.log('stderr: ' + data);
             });
 
