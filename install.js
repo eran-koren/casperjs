@@ -7,6 +7,7 @@ var spawn = require('child_process').spawn;
 
 function getPhantomURL ()
 {
+    //http://phantomjs.googlecode.com/files/phantomjs-1.8.1-linux-i686.tar.bz2
     var platform_suffix;
 
     if (process.platform === 'linux' && process.arch === 'x64')
@@ -31,12 +32,12 @@ function getPhantomURL ()
         //TODO: better error handeling
     }
 
-    return  'http://phantomjs.googlecode.com/files/phantomjs-1.8.0-' + platform_suffix;
+    return  'http://phantomjs.googlecode.com/files/phantomjs-1.8.1-' + platform_suffix;
 }
 
 
 
-function dlAndExtract(extractTo,remoteURL,then)
+function dlAndExtract(extractTo,remoteURL,method,then)
 {
     //todo: better error handling
 
@@ -66,9 +67,10 @@ function dlAndExtract(extractTo,remoteURL,then)
         console.log("extracting " + extractTo);
         fs.mkdirSync(path.join(__dirname, extractTo + "tmp"));
 
-        if (process.platform === 'linux')
+        if (method === "bzip2")
         {
             console.log("zip name " + zipName + " extract "+ extractTo);
+            console.log("zip command " + 'tar xjf ' + zipName + ' -C ' + extractTo + 'tmp');
 
             require('child_process').exec('tar xjf ' + zipName + ' -C ' + extractTo + 'tmp',
               function (error, stdout, stderr) {
@@ -107,7 +109,7 @@ function dlAndExtract(extractTo,remoteURL,then)
     });
 }
 
-dlAndExtract("casper",'https://github.com/n1k0/casperjs/zipball/1.0.1',function then()
+dlAndExtract("casper",'https://github.com/n1k0/casperjs/zipball/1.0.1',"zip",function then()
 {
     //make file executable (on *nix)
     if (process.platform != 'win32')
@@ -116,7 +118,7 @@ dlAndExtract("casper",'https://github.com/n1k0/casperjs/zipball/1.0.1',function 
     }
 });
 
-dlAndExtract("phantom",getPhantomURL(),function then()
+dlAndExtract("phantom",getPhantomURL(),process.platform === 'linux'? "bzip2" : "zip",function then()
 {
     //make file executable (on *nix)
     if (process.platform != 'win32')
