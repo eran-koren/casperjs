@@ -1,9 +1,8 @@
-//var https = require('https');
 var fs = require('fs');
-//var AdmZip = require('adm-zip');
 var request = require('request');
 var path = require("path");
 var unzip = require('unzip');
+var spawn = require('child_process').spawn;
 
 function getPhantomURL ()
 {
@@ -38,6 +37,24 @@ function getPhantomURL ()
 
 function dlAndExtract(extractTo,remoteURL,then)
 {
+    //todo: better error handling
+
+    function cleanUp() {
+        console.log("clean up " + extractTo);
+        var innerDir = fs.readdirSync(extractTo + "tmp")[0];
+        fs.renameSync(path.join(__dirname, extractTo + "tmp", innerDir), path.join(__dirname, extractTo));
+
+        //cleanup
+        fs.rmdirSync(path.join(__dirname, extractTo + "tmp"));
+        fs.unlinkSync(zipName);
+
+        //any additional steps e.g. fixing file permissions
+        if (then)
+        {
+            then();
+        }
+    }
+
     var zipName = extractTo + ".zip";
     var file    = fs.createWriteStream(zipName);
     var dl      = request(remoteURL);
@@ -47,24 +64,29 @@ function dlAndExtract(extractTo,remoteURL,then)
     {
         console.log("extracting " + extractTo);
         fs.mkdirSync(path.join(__dirname, extractTo + "tmp"));
-        var zip = unzip.Extract({ path:path.join(__dirname, extractTo + "tmp") });
-        fs.createReadStream(zipName).pipe(zip);
 
-        zip.on("close", function () {
-            console.log("clean up " + extractTo);
-            var innerDir = fs.readdirSync(extractTo + "tmp")[0];
-            fs.renameSync(path.join(__dirname, extractTo + "tmp", innerDir), path.join(__dirname, extractTo));
+        if (process.platform === 'linux')
+        {
+            var tar    = spawn('tar', ['xjf',zipName, '-C',extractTo + "tmp"]);
 
-            //cleanup
-            fs.rmdirSync(path.join(__dirname, extractTo + "tmp"));
-            fs.unlinkSync(zipName);
+            //print output for easier debugging
+            tar.stdout.on('data', function (data) {
+                console.log('stdout: ' + data);
+            });
+            tar.stderr.on('data', function (data) {
+                console.log('stderr: ' + data);
+            });
 
-            //any additional steps e.g. fixing file permissions
-            if (then)
-            {
-                then();
-            }
-        });
+            tar.on('exit', cleanUp);
+        }
+        else
+        {
+            var zip = unzip.Extract({ path:path.join(__dirname, extractTo + "tmp") });
+            fs.createReadStream(zipName).pipe(zip);
+
+            zip.on("close", cleanUp);
+        }
+
     });
 }
 
