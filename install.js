@@ -67,7 +67,9 @@ function dlAndExtract(extractTo,remoteURL,then)
 
         if (process.platform === 'linux')
         {
-            var tar    = spawn('tar', ['xjf',zipName, '-C',extractTo + "tmp"]);
+                    console.log("zip name " + zipName + " extract "+ extractTo);
+
+            var tar    = spawn('tar', ['-xjf',zipName, '-C',extractTo + "tmp"]);
 
             //print output for easier debugging
             tar.stdout.on('data', function (data) {
